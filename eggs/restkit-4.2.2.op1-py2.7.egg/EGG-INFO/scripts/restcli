@@ -1,0 +1,10 @@
+#!/home/likewise-open/LVIVSOFT/vturko/Documents/PythonTry/job/30_Maks_C/30_4/v4/bin/python2
+# -*- coding: utf-8 -*-
+#
+# This file is part of restkit released under the MIT license. 
+# See the NOTICE for more information.
+
+from restkit.contrib.console import main
+
+if __name__ == '__main__':
+    main()

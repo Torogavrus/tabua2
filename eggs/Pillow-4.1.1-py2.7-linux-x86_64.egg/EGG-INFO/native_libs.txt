@@ -1,0 +1,7 @@
+PIL/_imagingmorph.so
+PIL/_imagingft.so
+PIL/_imagingcms.so
+PIL/_imagingmath.so
+PIL/_imagingtk.so
+PIL/_webp.so
+PIL/_imaging.so

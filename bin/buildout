@@ -1,0 +1,12 @@
+#!/home/likewise-open/LVIVSOFT/vturko/Documents/PythonTry/job/30_Maks_C/30_4/v4/bin/python2
+
+import sys
+sys.path[0:0] = [
+  '/home/likewise-open/LVIVSOFT/vturko/Documents/PythonTry/job/30_Maks_C/30_4/robot_tests/eggs/setuptools-18.3.2-py2.7.egg',
+  '/home/likewise-open/LVIVSOFT/vturko/Documents/PythonTry/job/30_Maks_C/30_4/robot_tests/eggs/zc.buildout-2.5.3-py2.7.egg',
+  ]
+
+import zc.buildout.buildout
+
+if __name__ == '__main__':
+    sys.exit(zc.buildout.buildout.main())

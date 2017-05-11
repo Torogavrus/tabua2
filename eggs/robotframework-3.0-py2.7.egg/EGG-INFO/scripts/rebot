@@ -1,0 +1,6 @@
+#!/home/likewise-open/LVIVSOFT/vturko/Documents/PythonTry/job/30_Maks_C/30_4/v4/bin/python2
+
+import sys
+from robot import rebot_cli
+
+rebot_cli(sys.argv[1:])

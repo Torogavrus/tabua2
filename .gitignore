@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging / buildout
+/*.egg-info/
+/.installed.cfg
+/.mr.developer.cfg
+
+# Output of robot_tests
+/test_output/
+
+
+
