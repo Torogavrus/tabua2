@@ -7,6 +7,8 @@ Library  tabua_service.py
 # Library  BuiltIn
 
 *** Variables ***
+${TENDER_UAID_H}                                         UA-EA-2017-05-12-000030-1
+
 ${HOME_PAGE}                                           http://staging_sale.tab.com.ua/
 ${AUCTION_PAGE}                                        http://staging_sale.tab.com.ua/auctions/my
 
@@ -25,7 +27,7 @@ ${locator.delivery_town}             xpath=//input[contains(@id, "prozorro_aucti
 ${locator.delivery_address}          xpath=//input[contains(@id, "prozorro_auction_items_attributes_") and contains(@id, "_street_address")]
 ${locator.add_item}                  xpath=//a[@class="button btn_white add_auction_item add_fields"]
 
- ${locator.publish}                     xpath=//input[@name="publish"]
+${locator.publish}                     xpath=//input[@name="publish"]
 
 
 *** Keywords ***
@@ -197,10 +199,11 @@ Login
   Click Element                      ${locator.publish}
 
 # Get Ids
-###################### Need to be changed
+###################### WARNING Need to be changed
   Wait Until Page Contains Element   xpath=//span[@class="auction_short_title_text"]   30
-  ${tender_uaid}=         Get Text   xpath=//span[@class="auction_short_title_text"]
-  [Return]  ${TENDER_UAID}
+#  ${tender_uaid}=         Get Text   xpath=//span[@class="auction_short_title_text"]
+  Log To Console    tend id - ${TENDER_UAID_H}
+  [Return]  ${TENDER_UAID_H}
 
 set_clacifier
   [Arguments]        ${nonzero_num}   ${classification_id}
@@ -208,3 +211,48 @@ set_clacifier
   \   ${first_code_symbols}=   get_first_symbols   ${classification_id}   ${INDEX_N}
   \   Click Element     xpath=//label[starts-with(@for, '${first_code_symbols}')]
   \   Sleep     2
+
+
+Пошук тендера по ідентифікатору
+  [Arguments]  @{ARGUMENTS}
+  [Documentation]
+  ...      ${ARGUMENTS[0]} ==  username
+  ...      ${ARGUMENTS[1]} ==  ${TENDER_UAID}
+  Log To Console   Who is it_0 - ${ARGUMENTS[0]}
+  Log To Console   Searching for UFOs - ${ARGUMENTS[1]}
+  Switch browser   ${ARGUMENTS[0]}
+  Run Keyword If   '${ARGUMENTS[0]}' == 'tabua_Owner'   Go To  ${AUCTION_PAGE}
+  Run Keyword If   '${ARGUMENTS[0]}' != 'Newtend_Owner'   Go To  ${HOME_PAGE}
+  Wait Until Page Contains Element     id=q  10
+  Input Text        id=q  ${ARGUMENTS[1]}
+  Click Element   xpath=//input[@class="button btn_search"]
+  Go To  ${AUCTION_PAGE}
+  Wait Until Page Contains Element     xpath=//a[@class="auction_title accordion-title"]    10
+  Click Element   xpath=//a[@class="auction_title accordion-title"]
+  Sleep   1
+  ${g_value}=   Get Element Attribute   xpath=//div[contains(@id, "auction_tabs_")]@id
+  ${auc_url}=   get_auc_url   ${AUCTION_PAGE}   ${g_value}
+  Log To Console    lot url - ${auc_url}
+  Go To  ${auc_url}
+  Sleep  2
+#  Input Text        id=lalalalla  ${ARGUMENTS[1]}
+
+
+Отримати інформацію із тендера
+  [Arguments]  @{ARGUMENTS}
+  [Documentation]
+  ...      ${ARGUMENTS[0]} ==  username
+  ...      ${ARGUMENTS[1]} ==  tender_uaid
+  ...      ${ARGUMENTS[2]} ==  field_name
+  Run Keyword And Return  Отримати інформацію про ${ARGUMENTS[2]}
+
+Отримати інформацію про title
+  Log To Console    lolololololo
+  ${title}=   Get Text  xpath=//span[@class="auction_short_title_text"]
+  [Return]  ${title}
+
+
+#  Wait Until Page Contains Element     xpath=//div[@class="blue_block top_border"]
+#  ${h_value}=      Get Webelements     xpath=//div[@class="blue_block top_border"]/div/div
+#  ${g_val}=   Get Text  ${h_value[1]}
+#  Log To Console    lululululul - ${g_val}

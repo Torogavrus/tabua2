@@ -57,8 +57,10 @@ def get_region_name(region_name):
         return u'Київ'
     return region_name
 
+def get_auc_url(my_url, url_id_p):
+    return my_url.replace('my', url_id_p.split('_')[-1])
+
 ################ WARNING - hardcode
 def get_min_guarant(start_price):
     return str(start_price * 0.011)
 ################ WARNING - hardcode
-
