@@ -43,10 +43,7 @@ def get_nonzero_num(code_str):
 
 def repair_start_date(date_s):
     d_list = str(date_s).split('-')
-    # return '{0}.{1}.{2}'.format(d_list[2][:2], d_list[1], d_list[0])
-################ WARNING - hardcode
-    return '{0}.{1}.{2}'.format('20', d_list[1], d_list[0])
-################ WARNING - hardcode
+    return '{0}.{1}.{2}'.format(d_list[2][:2], d_list[1], d_list[0])
 
 
 def get_first_symbols(code_str, num):
@@ -56,9 +53,3 @@ def get_region_name(region_name):
     if region_name == u'місто Київ':
         return u'Київ'
     return region_name
-
-################ WARNING - hardcode
-def get_min_guarant(start_price):
-    return str(start_price * 0.011)
-################ WARNING - hardcode
-

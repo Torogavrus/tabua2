@@ -8,7 +8,7 @@ Library  tabua_service.py
 
 *** Variables ***
 ${HOME_PAGE}                                           http://staging_sale.tab.com.ua/
-${AUCTION_PAGE}                                        http://staging_sale.tab.com.ua/auctions/my
+${AUCTION_PAGE}                                        http://staging_sale.tab.com.ua/my_auctions
 
 # Auction creation locators
 ${locator.title}                     id=prozorro_auction_title_ua                         # Lot number (name) according to DGF
@@ -122,17 +122,20 @@ Login
   Log To Console    date - ${inp_start_date}
   Input Text   xpath=//input[@id="prozorro_auction_auction_period_attributes_should_start_after"]    ${inp_start_date}
 
+#  ${start_date_date}  Get Substring   ${start_date}    0   10
+#  ${hours}=           Get Substring   ${start_date}   11   13
+#  ${minutes}=         Get Substring   ${start_date}   14   16
+#  Input Text   ${locator.tenderPeriod.endDate}      ${start_date_date}
+#  Input Text   xpath=//input[@ng-change="updateHours()"]     ${hours}
+#  Input Text   xpath=//input[@ng-change="updateMinutes()"]   ${minutes}
+
 # Budget data add
   ${budget_string}      Convert To String    ${budget}
   Input Text   ${locator.value.amount}       ${budget_string}
   Click Element    xpath=//label[@for="prozorro_auction_value_attributes_vat_included"]
   ${step_rate_string}   Convert To String     ${step_rate}
   Input Text   ${locator.minimalStep.amount}  ${step_rate_string}
-#  ${guarantee_string}   Convert To String     ${guarantee}
-######################### Warning HARDCODE
-  ${guarantee_string}   get_min_guarant     ${budget}
-  Log To Console    min guarant - ${guarantee_string}
-######################### Warning HARDCODE
+  ${guarantee_string}   Convert To String     ${guarantee}
   Input Text    ${locator.guaranteeamount}    ${guarantee_string}
 
 #  Items block info
