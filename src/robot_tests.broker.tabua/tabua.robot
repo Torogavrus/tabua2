@@ -18,11 +18,14 @@ ${locator.value.amount}              id=prozorro_auction_value_attributes_amount
 ${locator.minimalStep.amount}        id=prozorro_auction_minimal_step_attributes_amount   # Minimal price step-up
 ${locator.guaranteeamount}           id=prozorro_auction_guarantee_attributes_amount      # Amount of Bank guarantee
 
-${locator.delivery_zip}              id=prozorro_auction_items_attributes_0_postal_code
-#${locator.delivery_region}           xpath=//input[@name="region"]
-${locator.delivery_town}             id=prozorro_auction_items_attributes_0_locality
-${locator.delivery_address}          id=prozorro_auction_items_attributes_0_street_address
-#${locator.delivery_save}             xpath=//button[@ng-click="save()"]
+${locator.delivery_zip}              xpath=//input[contains(@id, "prozorro_auction_items_attributes_") and contains(@id, "_postal_code")]
+${locator.delivery_region}           xpath=//select[contains(@id, "prozorro_auction_items_attributes_") and contains(@id, "_region")]
+${locator.delivery_country}          xpath=//select[contains(@id, "prozorro_auction_items_attributes_") and contains(@id, "_country_name")]
+${locator.delivery_town}             xpath=//input[contains(@id, "prozorro_auction_items_attributes_") and contains(@id, "_locality")]
+${locator.delivery_address}          xpath=//input[contains(@id, "prozorro_auction_items_attributes_") and contains(@id, "_street_address")]
+${locator.add_item}                  xpath=//a[@class="button btn_white add_auction_item add_fields"]
+
+ ${locator.publish}                     xpath=//input[@name="publish"]
 
 
 *** Keywords ***
@@ -36,7 +39,7 @@ ${locator.delivery_address}          id=prozorro_auction_items_attributes_0_stre
   ...      alias=${ARGUMENTS[0]}
   Set Window Size   @{USERS.users['${ARGUMENTS[0]}'].size}
   Set Window Position   @{USERS.users['${ARGUMENTS[0]}'].position}
-  Run Keyword If   '${ARGUMENTS[0]}' != 'Newtend_Viewer'   Login    ${ARGUMENTS[0]}
+  Run Keyword If   '${ARGUMENTS[0]}' != 'tabua_Viewer'   Login    ${ARGUMENTS[0]}
 
 
 Login
@@ -113,6 +116,20 @@ Login
   Log To Console    attempts - '${tender_attempts}'
   Select From List By Value   xpath=//select[@id="prozorro_auction_tender_attempts"]    ${tender_attempts}
 
+# Auction Start date
+  Log To Console    date - '${start_date}'
+  ${inp_start_date}=   repair_start_date   ${start_date}
+  Log To Console    date - ${inp_start_date}
+  Input Text   xpath=//input[@id="prozorro_auction_auction_period_attributes_should_start_after"]    ${inp_start_date}
+
+#  ${start_date_date}  Get Substring   ${start_date}    0   10
+#  ${hours}=           Get Substring   ${start_date}   11   13
+#  ${minutes}=         Get Substring   ${start_date}   14   16
+#  Input Text   ${locator.tenderPeriod.endDate}      ${start_date_date}
+#  Input Text   xpath=//input[@ng-change="updateHours()"]     ${hours}
+#  Input Text   xpath=//input[@ng-change="updateMinutes()"]   ${minutes}
+
+# Budget data add
   ${budget_string}      Convert To String    ${budget}
   Input Text   ${locator.value.amount}       ${budget_string}
   Click Element    xpath=//label[@for="prozorro_auction_value_attributes_vat_included"]
@@ -148,10 +165,13 @@ Login
   \   ${deliveryaddress_locality}=          Get From Dictionary         ${deliveryaddress}   locality
   \   Log To Console    index - ${INDEX}
 # Add Item(s)
-  \   Input Text    id=prozorro_auction_items_attributes_0_description_ua     ${item_description}
-  \   Input Text    id=prozorro_auction_items_attributes_0_quantity           ${item_quantity}
+  \   ${item_descr_field}=   Get Webelements     xpath=//textarea[contains(@id, 'prozorro_auction_items_attributes_') and contains(@id, '_description_ua')]
+  \   Input Text    ${item_descr_field[-1]}     ${item_description}
+  \   ${item_quantity_field}=   Get Webelements     xpath=//input[contains(@id, 'prozorro_auction_items_attributes') and contains(@id, '_quantity')]
+  \   Input Text    ${item_quantity_field[-1]}           ${item_quantity}
   \   ${spec_unit_name}=   get_select_unit_name   ${unit_name}
-  \   Select From List By Value   xpath=//select[@id="prozorro_auction_items_attributes_0_unit_code"]    ${spec_unit_name}
+  \   ${unit_name_field}=   Get Webelements     xpath=//select[contains(@id, 'prozorro_auction_items_attributes_') and contains(@id, '_unit_code')]
+  \   Select From List By Value   ${unit_name_field[-1]}    ${spec_unit_name}
 # Selecting classifier
   \   ${classifier_field}=      Get Webelements     xpath=//span[@class="btn btn_editing"]
   \   Click Element     ${classifier_field[-1]}
@@ -162,24 +182,28 @@ Login
   \   Click Element     xpath=//span[@class='button btn_adding']
   \   Sleep     2
 # Add delivery address
-  \   Input Text        ${locator.delivery_zip}      ${deliveryaddress_postalcode}
-#  \   Input Text        ${locator.delivery_region}   ${deliveryaddress_region}
-  \   Input Text        ${locator.delivery_town}     ${deliveryaddress_locality}
-  \   Input Text        ${locator.delivery_address}  ${deliveryaddress_streetaddress}
-#  \   Click Element     ${locator.delivery_save}
-#  \   Sleep     3
-#  \   ${new_item_cross}=    Get Webelements     xpath=//a[@ng-click="addField()"]
-#  \   Run Keyword If   '${INDEX}' < '${item_number}'   Click Element    ${new_item_cross[-1]}
+  \   ${delivery_zip_field}=   Get Webelements     ${locator.delivery_zip}
+  \   Input Text        ${delivery_zip_field[-1]}      ${deliveryaddress_postalcode}
+  \   ${delivery_country_field}=   Get Webelements     ${locator.delivery_country}
+  \   Select From List By Value   ${delivery_country_field[-1]}    ${deliveryaddress_countryname}
+  \   ${region_name}=   get_region_name   ${deliveryaddress_region}
+  \   ${region_name_field}=   Get Webelements     ${locator.delivery_region}
+  \   Select From List By Value   ${region_name_field[-1]}    ${region_name}
+  \   ${delivery_town_field}=   Get Webelements     ${locator.delivery_town}
+  \   Input Text        ${delivery_town_field[-1]}     ${deliveryaddress_locality}
+  \   ${delivery_address_field}=   Get Webelements     ${locator.delivery_address}
+  \   Input Text        ${delivery_address_field[-1]}  ${deliveryaddress_streetaddress}
+  \   Run Keyword If   '${INDEX}' < '${item_number}'   Click Element     ${locator.add_item}
+  \   Sleep     3
 
+# Save Auction - publish to CDB
+  Click Element                      ${locator.publish}
 
-
-
-
-
-  Log To Console    attempts - lallalalallalal
-
-
-  Sleep	5
+# Get Ids
+###################### Need to be changed
+  Wait Until Page Contains Element   xpath=//span[@class="auction_short_title_text"]   30
+  ${tender_uaid}=         Get Text   xpath=//span[@class="auction_short_title_text"]
+  [Return]  ${TENDER_UAID}
 
 set_clacifier
   [Arguments]        ${nonzero_num}   ${classification_id}

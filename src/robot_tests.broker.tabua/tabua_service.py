@@ -41,6 +41,15 @@ def get_nonzero_num(code_str):
 
     return len(code_str) + 1
 
+def repair_start_date(date_s):
+    d_list = str(date_s).split('-')
+    return '{0}.{1}.{2}'.format(d_list[2][:2], d_list[1], d_list[0])
+
 
 def get_first_symbols(code_str, num):
     return 'cav_' + code_str[:int(num)]
+
+def get_region_name(region_name):
+    if region_name == u'місто Київ':
+        return u'Київ'
+    return region_name
