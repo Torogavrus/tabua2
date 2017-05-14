@@ -44,6 +44,7 @@ ${ITEM_MEAT}        ${True}
   ...      ${USERS.users['${viewer}'].broker}
   ...      tender_view  level1
   [Setup]  Дочекатись синхронізації з майданчиком  ${viewer}
+  Log To Console    ara1 viewer - ${viewer}
   Звірити відображення поля title тендера для користувача ${viewer}
 
 

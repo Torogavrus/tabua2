@@ -396,11 +396,16 @@ Log differences between dicts
 Звірити поле тендера
   [Arguments]  ${username}  ${tender_uaid}  ${tender_data}  ${field}
   ${left}=  get_from_object  ${tender_data.data}  ${field}
+  Log To Console    jra1 username - ${username}
+  Log To Console    jra2 tender_uaid - ${tender_uaid}
+#  Log To Console    jra3 tender_data - ${tender_data}
+  Log To Console    jra4 field - ${field}
   Звірити поле тендера із значенням  ${username}  ${tender_uaid}  ${left}  ${field}
 
 
 Звірити поле тендера із значенням
   [Arguments]  ${username}  ${tender_uaid}  ${left}  ${field}  ${object_id}=${Empty}
+  Log To Console    gra1 object_id - ${object_id}
   ${right}=  Отримати дані із тендера  ${username}  ${tender_uaid}  ${field}  ${object_id}
   Порівняти об'єкти  ${left}  ${right}
 
@@ -526,17 +531,27 @@ Log differences between dicts
 
 Отримати дані із тендера
   [Arguments]  ${username}  ${tender_uaid}  ${field_name}  ${object_id}=${Empty}
+  Log To Console    kra1 username - ${username}
+  Log To Console    kra2 tender_uaid - ${tender_uaid}
+  Log To Console    kra3 field_name - ${field_name}
+  Log To Console    kra4 object_id - ${object_id}
+
   ${field}=  Run Keyword If  '${object_id}'  Отримати шлях до поля об’єкта  ${username}  ${field_name}  ${object_id}
   ...             ELSE  Set Variable  ${field_name}
+  Log To Console    kra5 - ${field}
+#  Log To Console    kra51 - ${USERS.users['${username}'].tender_data.data}
   ${status}  ${field_value}=  Run keyword and ignore error
   ...      get_from_object
   ...      ${USERS.users['${username}'].tender_data.data}
   ...      ${field}
+  Log To Console    kra6 status - ${status}
+  Log To Console    kra7 field_value - ${field_value}
   # If field in cache, return its value
   Run Keyword if  '${status}' == 'PASS'  Return from keyword   ${field_value}
   # Else call broker to find field
   ${field_value}=  Run Keyword IF  '${object_id}'  Отримати дані із об’єкта тендера  ${username}  ${tender_uaid}  ${object_id}  ${field_name}
   ...                          ELSE  Run As  ${username}  Отримати інформацію із тендера  ${tender_uaid}  ${field}
+  Log To Console    kra8 field_value - ${field_value}
   # And caching its value before return
   Set_To_Object  ${USERS.users['${username}'].tender_data.data}  ${field}  ${field_value}
   ${data}=  munch_dict  arg=${USERS.users['${username}'].tender_data.data}

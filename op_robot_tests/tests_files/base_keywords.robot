@@ -115,6 +115,9 @@ Resource           resource.robot
 
 
 Звірити відображення поля ${field} тендера для користувача ${username}
+  Log To Console    ira1 username - ${username}
+  Log To Console    ira2 field - ${field}
+
   Звірити поле тендера  ${username}  ${TENDER['TENDER_UAID']}  ${USERS.users['${tender_owner}'].initial_data}  ${field}
 
 
