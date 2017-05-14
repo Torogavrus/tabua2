@@ -11,7 +11,7 @@
 
 def update_test_data(role_name, tender_data):
     if role_name == 'tender_owner':
-        tender_data['data']['procuringEntity']['name'] = u"VVV"
+        tender_data['data']['procuringEntity']['name'] = u'ПАТ "Тест Банк"'
     return tender_data
 
 def substract(dividend, divisor):
@@ -45,7 +45,7 @@ def repair_start_date(date_s):
     d_list = str(date_s).split('-')
     # return '{0}.{1}.{2}'.format(d_list[2][:2], d_list[1], d_list[0])
 ################ WARNING - hardcode
-    return '{0}.{1}.{2}'.format('20', d_list[1], d_list[0])
+    return '{0}.{1}.{2}'.format('22', d_list[1], d_list[0])
 ################ WARNING - hardcode
 
 
@@ -57,8 +57,16 @@ def get_region_name(region_name):
         return u'Київ'
     return region_name
 
-def get_auc_url(my_url, url_id_p):
-    return my_url.replace('my', url_id_p.split('_')[-1])
+def get_auc_url(url_id_p):
+    return 'http://staging_sale.tab.com.ua/auctions/{}'.format(url_id_p.split('_')[-1])
+
+def get_ua_id(ua_id):
+    if u'UA-EA-' in ua_id:
+        return ua_id
+    return ''
+
+def convert_nt_string_to_common_string(proc_method):
+    return proc_method.split(':')[-1].strip()
 
 ################ WARNING - hardcode
 def get_min_guarant(start_price):

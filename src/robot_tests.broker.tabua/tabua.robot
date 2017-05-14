@@ -7,10 +7,10 @@ Library  tabua_service.py
 # Library  BuiltIn
 
 *** Variables ***
-${TENDER_UAID_H}                                         UA-EA-2017-05-12-000030-1
+#${TENDER_UAID_H}                                         UA-EA-2017-05-12-000030-1
 
 ${HOME_PAGE}                                           http://staging_sale.tab.com.ua/
-${AUCTION_PAGE}                                        http://staging_sale.tab.com.ua/auctions/my
+${AUCTION_PAGE}                                        http://staging_sale.tab.com.ua/auctions
 
 # Auction creation locators
 ${locator.title}                     id=prozorro_auction_title_ua                         # Lot number (name) according to DGF
@@ -28,6 +28,9 @@ ${locator.delivery_address}          xpath=//input[contains(@id, "prozorro_aucti
 ${locator.add_item}                  xpath=//a[@class="button btn_white add_auction_item add_fields"]
 
 ${locator.publish}                     xpath=//input[@name="publish"]
+
+${locator.tenderPeriod.endDate}                                 xpath=//span[@class="entry_submission_end_detail"]
+
 
 
 *** Keywords ***
@@ -127,7 +130,7 @@ Login
 # Budget data add
   ${budget_string}      Convert To String    ${budget}
   Input Text   ${locator.value.amount}       ${budget_string}
-  Click Element    xpath=//label[@for="prozorro_auction_value_attributes_vat_included"]
+#  Click Element    xpath=//label[@for="prozorro_auction_value_attributes_vat_included"]
   ${step_rate_string}   Convert To String     ${step_rate}
   Input Text   ${locator.minimalStep.amount}  ${step_rate_string}
 #  ${guarantee_string}   Convert To String     ${guarantee}
@@ -200,10 +203,16 @@ Login
 
 # Get Ids
 ###################### WARNING Need to be changed
-  Wait Until Page Contains Element   xpath=//span[@class="auction_short_title_text"]   30
-#  ${tender_uaid}=         Get Text   xpath=//span[@class="auction_short_title_text"]
-  Log To Console    tend id - ${TENDER_UAID_H}
-  [Return]  ${TENDER_UAID_H}
+  : FOR   ${INDEX}  IN RANGE    1   15
+  \   Wait Until Page Contains Element     xpath=//div[@class="blue_block top_border"]
+  \   ${id_values}=      Get Webelements     xpath=//div[@class="blue_block top_border"]/div/div
+  \   ${uid_val}=   Get Text  ${id_values[3]}
+  \   ${TENDER_UAID}=   get_ua_id   ${uid_val}
+  \   Exit For Loop If  '${TENDER_UAID}' > '0'
+  \   Sleep     30
+  \   Reload Page
+#  Log To Console    tend id - ${TENDER_UAID_H}
+  [Return]  ${TENDER_UAID}
 
 set_clacifier
   [Arguments]        ${nonzero_num}   ${classification_id}
@@ -229,9 +238,10 @@ set_clacifier
   Go To  ${AUCTION_PAGE}
   Wait Until Page Contains Element     xpath=//a[@class="auction_title accordion-title"]    10
   Click Element   xpath=//a[@class="auction_title accordion-title"]
-  Sleep   1
+  Sleep   3
   ${g_value}=   Get Element Attribute   xpath=//div[contains(@id, "auction_tabs_")]@id
-  ${auc_url}=   get_auc_url   ${AUCTION_PAGE}   ${g_value}
+  Log To Console    auction_tabs_ - ${g_value}
+  ${auc_url}=   get_auc_url   ${g_value}
   Log To Console    lot url - ${auc_url}
   Go To  ${auc_url}
   Sleep  2
@@ -244,7 +254,44 @@ set_clacifier
   ...      ${ARGUMENTS[0]} ==  username
   ...      ${ARGUMENTS[1]} ==  tender_uaid
   ...      ${ARGUMENTS[2]} ==  field_name
+  Log To Console    tend info lalalalll - ${ARGUMENTS[2]}
   Run Keyword And Return  Отримати інформацію про ${ARGUMENTS[2]}
+
+#Отримати інформацію із тендера
+#	[Arguments]  ${user_name}  ${tender_id}  ${element}
+#	Run Keyword And Return If	'${element}' == 'status'								Отримати status аукціону					${element}
+#	Run Keyword And Return If	'${element}' == 'value.amount'							Отримати число								${element}
+#	Run Keyword And Return If	'${element}' == 'value.valueAddedTaxIncluded'			Отримати інформацію про включення ПДВ		${element}
+#	Run Keyword And Return If	'${element}' == 'minimalStep.amount'					Отримати число								${element}
+#	Run Keyword And Return If	'${element}' == 'minimalStep.valueAddedTaxIncluded'		Отримати інформацію про включення ПДВ		${element}
+#	Run Keyword And Return If	'${element}' == 'tender_cancellation_title'				Отримати заголовок документа				${element}
+#	Run Keyword And Return If	'${element}' == 'procurementMethodType'					Отримати тип оголошеного лоту				${element}
+#	Run Keyword And Return If	'${element}' == 'tenderAttempts'						Отримати значення поля Лоти виставляються	${element}
+#	Run Keyword And Return If	'${element}' == 'cancellations[0].status'				Перевірити cancellations[0].status
+#
+#	Run Keyword And Return If	'Period.' in '${element}'								Отримати дату та час						${element}
+#
+#	Wait Until Element Is Visible	${tender_data.${element}}	timeout=${COMMONWAIT}
+#	${result} =						Отримати текст	${element}
+#	[return]	${result}
+
+Отримати тест із поля і показати на сторінці
+    [Arguments]   ${field_name}
+    ${return_value}=   Get Text  ${locator.${field_name}}
+    [Return]  ${return_value}
+
+Отримати інформацію про tenderPeriod.endDate
+    ${return_value}=    Отримати тест із поля і показати на сторінці  tenderPeriod.endDate
+    Log To Console    end date lalalalll - ${return_value}
+    [Return]    ${return_value}
+
+Отримати інформацію про procurementMethodType
+  ${procurementType_text}=   Get Text   xpath=//div[contains(@class, "auction_type")]
+  Log To Console  lololololo - ${procurementType_text}
+  ${procurementMethodType}=  convert_nt_string_to_common_string   ${procurementType_text}
+  Log To Console  ${procurementMethodType}
+  [Return]  ${procurementMethodType}
+
 
 Отримати інформацію про title
   Log To Console    lolololololo
