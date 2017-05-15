@@ -43,9 +43,9 @@ def get_nonzero_num(code_str):
 
 def repair_start_date(date_s):
     d_list = str(date_s).split('-')
-    # return '{0}.{1}.{2}'.format(d_list[2][:2], d_list[1], d_list[0])
+    return '{0}.{1}.{2}'.format(d_list[2][:2], d_list[1], d_list[0])
 ################ WARNING - hardcode
-    return '{0}.{1}.{2}'.format('22', d_list[1], d_list[0])
+    # return '{0}.{1}.{2}'.format('22', d_list[1], d_list[0])
 ################ WARNING - hardcode
 
 
